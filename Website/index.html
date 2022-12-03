@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+    <title>ระบบ IoT ESP32 อัจฉริยะ</title>
+	<style>
+		/* The switch - the box around the slider */
+	   .switch {
+		 position: relative;
+		 display: inline-block;
+		 width: 60px;
+		 height: 34px;
+	   }
+
+	   /* Hide default HTML checkbox */
+	   .switch input {
+		 opacity: 0;
+		 width: 0;
+		 height: 0;
+	   }
+
+	   /* The slider */
+	   .slider {
+		 position: absolute;
+		 cursor: pointer;
+		 top: 0;
+		 left: 0;
+		 right: 0;
+		 bottom: 0;
+		 background-color: #ccc;
+		 -webkit-transition: .4s;
+		 transition: .4s;
+	   }
+
+	   .slider:before {
+		 position: absolute;
+		 content: "";
+		 height: 26px;
+		 width: 26px;
+		 left: 4px;
+		 bottom: 4px;
+		 background-color: white;
+		 -webkit-transition: .4s;
+		 transition: .4s;
+	   }
+
+	   input:checked + .slider {
+		 background-color: #2196F3;
+	   }
+
+	   input:focus + .slider {
+		 box-shadow: 0 0 1px #2196F3;
+	   }
+
+	   input:checked + .slider:before {
+		 -webkit-transform: translateX(26px);
+		 -ms-transform: translateX(26px);
+		 transform: translateX(26px);
+	   }
+
+	   /* Rounded sliders */
+	   .slider.round {
+		 border-radius: 34px;
+	   }
+
+	   .slider.round:before {
+		 border-radius: 50%;
+	   }
+	   
+	   body {
+		background-color: rgb(164, 255, 220);
+	   }
+   </style>
+   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+   <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  
+  <body>
+
+	<div class="topnav">
+		<h1>ระบบเปิด-ปิดไฟ LED และ ดูอุณหภูมิ สุดมหัศจรรย์ <i class="fas fa-lightbulb"></i></h1>
+	  </div>
+
+    <div>
+		<center>
+			<div>
+				<br>
+				<h3>กดเปิดไฟสิ แล้วมันจะสว่างขึ้น</h3><br><br>
+				<img src="img/LED-Light-PNG-HD.png" alt="Girl in a jacket" width="20%" height="20%"><br>
+				<label class="switch"><input type="checkbox" id="led_1_switch"/><span class="slider round"></span></label>
+				<br>
+			</div>
+			<div>
+				<br>
+				<h3>ดูอุณหภูมิสิ</h3><br><br>
+				<img src="img/pngwing.com.png" alt="Girl in a jacket" width="20%" height="20%"><br>
+				อุณหภูมิ : <input type="text" id="read_temperature" readonly placeholder="กดสิแล้วนายจะเห็นอุณหภูมิ" style="margin-top: 0.5rem; font-size: 1rem;">
+				<input type="submit" value="กดสิ" onclick="read_from_firebase();">
+				<br>
+				<br>
+			</div>
+		</center>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.2.4/firebase-app.min.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase.js"></script>
+	
+	<script>
+
+		const firebaseConfig = {
+			apiKey: "AIzaSyCI8mwcEIyx27MXa-VgZekVHMwZvT5ZM_Q",
+			authDomain: "my-iot-2-a4be2.firebaseapp.com",
+			databaseURL: "https://my-iot-2-a4be2-default-rtdb.asia-southeast1.firebasedatabase.app",
+			projectId: "my-iot-2-a4be2",
+			storageBucket: "my-iot-2-a4be2.appspot.com",
+			messagingSenderId: "338021387305",
+			appId: "1:338021387305:web:742fb74a4c2d6c88366038"
+		};
+		// Initialize Firebase
+		firebase.initializeApp(firebaseConfig);
+	</script>
+
+<script>
+	
+	var RefObject = firebase.database().ref().child('ESP32/status');
+					
+	const ledSwitch = document.getElementById('led_1_switch');
+	ledSwitch.addEventListener('change', (event) => 
+	{
+	  if (event.currentTarget.checked) 
+	  {
+		RefObject.update({"LED/LED_1":1});
+	  } 
+	  else 
+	  {
+		RefObject.update({"LED/LED_1":0});
+	  }
+	});
+	
+	function read_from_firebase()
+	{
+		var RefObject = firebase.database().ref().child('ESP32/status');
+
+		var temperature = document.getElementById('read_temperature');
+		RefObject.on('value' ,snap => 
+		temperature.value = JSON.stringify(snap.child('TEMP/TEMP_1').val()).replace(/['"]+/g, ''));
+		}
+</script>
+
+  </body>
+</html>
+
+
+
+
